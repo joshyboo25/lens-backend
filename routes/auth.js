@@ -8,8 +8,7 @@ const jwt = require('jsonwebtoken');
 router.post('/signup', async (req, res) => {
   const { username, email, password } = req.body;
   try {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await User.create({ username, email, password: hashedPassword });
+    const user = await User.create({ username, email, password }); // ❌ no manual hashing
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '2h' });
     res.status(201).json({ message: 'User created', token });
   } catch (err) {
@@ -17,6 +16,7 @@ router.post('/signup', async (req, res) => {
     res.status(400).json({ message: err.message || 'Signup failed' });
   }
 });
+
 
 // Login
 router.post('/login', async (req, res) => {

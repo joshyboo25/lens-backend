@@ -25,9 +25,12 @@ app.use('/api/auth', require('./routes/auth'));
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
+  serverSelectionTimeoutMS: 10000, // 💡 Max time to wait for Mongo before throwing an error
+  socketTimeoutMS: 45000,          // 💡 Timeout for any stalled connection attempt
 })
 .then(() => console.log('✅ Connected to MongoDB'))
-.catch((err) => console.error('❌ MongoDB connection error:', err));
+.catch(err => console.error('❌ MongoDB connection error:', err));
+
 
 
 // Root route for testing

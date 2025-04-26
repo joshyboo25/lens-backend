@@ -85,17 +85,10 @@ router.post('/upload', verifyToken, upload.single('image'), async (req, res) => 
   }
 });
 
-<<<<<<< HEAD
-// 📡 GET all uploads across all users
-router.get('/all-uploads', async (req, res) => {
-  try {
-    const users = await User.find({}, 'uploads username'); // pull uploads + who posted
-=======
 // All uploads route
 router.get('/all-uploads', async (req, res) => {
   try {
     const users = await User.find({}, 'uploads username');
->>>>>>> d7fcb33 (add all-uploads route for public gallery)
     const uploads = [];
 
     users.forEach(user => {

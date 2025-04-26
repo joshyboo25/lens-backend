@@ -85,5 +85,30 @@ router.post('/upload', verifyToken, upload.single('image'), async (req, res) => 
   }
 });
 
+// 📡 GET all uploads across all users
+router.get('/all-uploads', async (req, res) => {
+  try {
+    const users = await User.find({}, 'uploads username'); // pull uploads + who posted
+    const uploads = [];
+
+    users.forEach(user => {
+      if (user.uploads && user.uploads.length > 0) {
+        user.uploads.forEach(imgPath => {
+          uploads.push({ 
+            src: imgPath, 
+            username: user.username || "unknown" 
+          });
+        });
+      }
+    });
+
+    res.json({ uploads });
+  } catch (err) {
+    console.error('❌ Failed to fetch all uploads:', err);
+    res.status(500).json({ error: 'Server error fetching uploads' });
+  }
+});
+
+
 module.exports = router;
 

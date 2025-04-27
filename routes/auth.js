@@ -3,6 +3,8 @@ const router = express.Router();
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const verifyToken = require('../middleware/verifyToken');
+
 
 // Signup (Fixed)
 router.post('/signup', async (req, res) => {
@@ -49,9 +51,10 @@ router.post('/login', async (req, res) => {
 });
 
 // auth.js (backend Express route)
-router.get('/validate', authMiddleware, (req, res) => {
-  res.status(200).json({ message: 'Valid token' });
+router.get('/validate', verifyToken, (req, res) => {
+  res.status(200).json({ message: "Token is valid" });
 });
+
 
 
 module.exports = router;

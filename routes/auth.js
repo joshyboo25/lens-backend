@@ -4,11 +4,18 @@ const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-// Signup
+// Signup (Fixed)
 router.post('/signup', async (req, res) => {
   const { username, email, password } = req.body;
   try {
-    const user = await User.create({ username, email, password }); // ❌ no manual hashing
+    const hashedPassword = await bcrypt.hash(password, 10); // ✅ HASH the password
+
+    const user = await User.create({ 
+      username, 
+      email, 
+      password: hashedPassword // ✅ Store the hashed password, not plain text
+    });
+
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '2h' });
     res.status(201).json({ message: 'User created', token });
   } catch (err) {
@@ -16,6 +23,7 @@ router.post('/signup', async (req, res) => {
     res.status(400).json({ message: err.message || 'Signup failed' });
   }
 });
+
 
 
 // Login
@@ -39,6 +47,12 @@ router.post('/login', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
+// auth.js (backend Express route)
+router.get('/validate', authMiddleware, (req, res) => {
+  res.status(200).json({ message: 'Valid token' });
+});
+
 
 module.exports = router;
 

@@ -5,19 +5,16 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const verifyToken = require('../middleware/verifyToken');
 
-
-// Signup (Fixed)
+// --- Signup (NO verifyToken here!) ---
 router.post('/signup', async (req, res) => {
   const { username, email, password } = req.body;
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
-
     const user = await User.create({
       username,
-      email: email.toLowerCase(), // Force lowercase at signup
+      email: email.toLowerCase(),
       password: hashedPassword
     });
-
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '2h' });
     res.status(201).json({ message: 'User created', token });
   } catch (err) {

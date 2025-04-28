@@ -16,11 +16,13 @@ router.get("/dashboard", verifyToken, async (req, res) => {
     await user.save();
 
     res.json({
-      username: user.username,
-      lastLogin: user.lastLogin,
-      uploads: user.uploads || [],
-      followers: user.followers || 0
-    });
+  username: user.username,
+  lastLogin: user.lastLogin,
+  uploads: user.uploads || [],
+  followers: user.followers || 0,
+  profilePic: user.profilePic || null
+});
+
   } catch (err) {
     console.error('Dashboard error:', err);
     res.status(500).json({ error: 'Dashboard failed' });

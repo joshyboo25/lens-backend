@@ -8,18 +8,18 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: ['https://lenslayereddesigns.netlify.app'], 
-  credentials: true
+  origin: ['https://lenslayereddesigns.netlify.app'],
+  credentials: true,
+  methods: ['GET', 'POST']
 }));
 
 app.use(express.json());
 
-// Static file serving for uploads (if you're using that)
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-// Routes
-app.use('/api/user', require('./routes/user'));
+// Public routes (open, no token needed)
 app.use('/api/auth', require('./routes/auth'));
+
+// Protected routes (need token)
+app.use('/api/user', require('./routes/user'));
 app.use('/api/misc', require('./routes/misc'));
 
 // MongoDB Connection

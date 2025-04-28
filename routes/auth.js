@@ -29,16 +29,20 @@ router.post('/signup', async (req, res) => {
 // Login
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
-  console.log("👉 Login attempt:", email);
+  console.log("👉 Login attempt:", email, password); // LOG what frontend is sending
 
   try {
-    const user = await User.findOne({ email: email.toLowerCase() }); // Force lowercase lookup
+    const user = await User.findOne({ email: email.toLowerCase() });
     if (!user) {
-      console.log("❌ No user found for email:", email);
+      console.log("❌ No user found for:", email);
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
+    console.log("🔍 Found user:", user);
+
     const isMatch = await bcrypt.compare(password, user.password);
+    console.log("🔑 bcrypt.compare result:", isMatch); // ← Check TRUE or FALSE
+
     if (!isMatch) {
       console.log("❌ Password mismatch");
       return res.status(401).json({ message: 'Invalid credentials' });
@@ -47,10 +51,11 @@ router.post('/login', async (req, res) => {
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '2h' });
     res.json({ token, user });
   } catch (err) {
-    console.error('Login error:', err);
+    console.error('Login error:', err.message);
     res.status(500).json({ message: 'Server error' });
   }
 });
+
 
 
 // auth.js (backend Express route)

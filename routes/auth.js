@@ -26,20 +26,16 @@ router.post('/signup', async (req, res) => {
 // Login
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
-  console.log("👉 Login attempt:", email, password); // LOG what frontend is sending
+  console.log("👉 Login attempt:", email);
 
   try {
     const user = await User.findOne({ email: email.toLowerCase() });
     if (!user) {
-      console.log("❌ No user found for:", email);
+      console.log("❌ No user found:", email);
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    console.log("🔍 Found user:", user);
-
     const isMatch = await bcrypt.compare(password, user.password);
-    console.log("🔑 bcrypt.compare result:", isMatch); // ← Check TRUE or FALSE
-
     if (!isMatch) {
       console.log("❌ Password mismatch");
       return res.status(401).json({ message: 'Invalid credentials' });
@@ -52,6 +48,7 @@ router.post('/login', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
 
 
 

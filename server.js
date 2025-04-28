@@ -8,7 +8,7 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: ['https://lenslayereddesigns.netlify.app'],
+  origin: ['https://680edd16f75a524ae9bbf47c--lenslayereddesigns.netlify.app/'],
   credentials: true,
   methods: ['GET', 'POST']
 }));

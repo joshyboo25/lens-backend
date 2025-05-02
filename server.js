@@ -8,10 +8,14 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: ['https://lenslayereddesigns.netlify.app'], // ✅ your real domain
+  origin: [
+    'https://lenslayereddesigns.netlify.app',
+    'https://main--lenslayereddesigns.netlify.app' // 👈 add this
+  ],
   credentials: true,
   methods: ['GET', 'POST']
 }));
+
 
 
 app.use(express.json());

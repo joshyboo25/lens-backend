@@ -35,9 +35,6 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    console.log("✅ User found:", user.email);
-    console.log("🧪 Checking password match...");
-
     const isMatch = await bcrypt.compare(password, user.password);
     console.log("🔐 Match result:", isMatch);
 
@@ -48,16 +45,13 @@ router.post('/login', async (req, res) => {
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '2h' });
     console.log("🎫 Token generated");
-
-    res.json({ token, user });
+    res.status(200).json({ message: 'Login successful', token }); // ✅ Unified format
 
   } catch (err) {
     console.error('Login error:', err.message);
     res.status(500).json({ message: 'Server error' });
   }
 });
-
-
 
 
 // auth.js (backend Express route)

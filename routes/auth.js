@@ -23,26 +23,34 @@ router.post('/signup', async (req, res) => {
   }
 });
 
-// Login
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
-  console.log("👉 Login attempt:", email);
+  console.log(`Login attempt for ${email.slice(0, 2)}***@***`);
 
   try {
     const user = await User.findOne({ email: email.toLowerCase() });
+
     if (!user) {
       console.log("❌ No user found:", email);
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
+    console.log("✅ User found:", user.email);
+    console.log("🧪 Checking password match...");
+
     const isMatch = await bcrypt.compare(password, user.password);
+    console.log("🔐 Match result:", isMatch);
+
     if (!isMatch) {
       console.log("❌ Password mismatch");
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '2h' });
+    console.log("🎫 Token generated");
+
     res.json({ token, user });
+
   } catch (err) {
     console.error('Login error:', err.message);
     res.status(500).json({ message: 'Server error' });

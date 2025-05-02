@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const verifyToken = require('../middleware/verifyToken');
 
-// --- Signup (NO verifyToken here!) ---
+// --- Signup ---
 router.post('/signup', async (req, res) => {
   const { username, email, password } = req.body;
   try {
@@ -15,6 +15,7 @@ router.post('/signup', async (req, res) => {
       email: email.toLowerCase(),
       password: hashedPassword
     });
+
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '2h' });
     res.status(201).json({ message: 'User created', token });
   } catch (err) {
@@ -23,13 +24,13 @@ router.post('/signup', async (req, res) => {
   }
 });
 
+// --- Login ---
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   console.log(`Login attempt for ${email.slice(0, 2)}***@***`);
 
   try {
     const user = await User.findOne({ email: email.toLowerCase() });
-
     if (!user) {
       console.log("❌ No user found:", email);
       return res.status(401).json({ message: 'Invalid credentials' });
@@ -45,7 +46,7 @@ router.post('/login', async (req, res) => {
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '2h' });
     console.log("🎫 Token generated");
-    res.status(200).json({ message: 'Login successful', token }); // ✅ Unified format
+    res.status(200).json({ message: 'Login successful', token });
 
   } catch (err) {
     console.error('Login error:', err.message);
@@ -53,13 +54,23 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// --- Token Validation ---
+router.get('/validate', verifyToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('username email');
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-// auth.js (backend Express route)
-router.get('/validate', verifyToken, (req, res) => {
-  res.status(200).json({ message: "Token is valid" });
+    res.status(200).json({
+      message: "Token is valid",
+      user: {
+        username: user.username,
+        email: user.email
+      }
+    });
+  } catch (err) {
+    console.error("Token validation error:", err);
+    res.status(500).json({ message: "Validation error" });
+  }
 });
 
-
-
 module.exports = router;
-

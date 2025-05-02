@@ -5,31 +5,29 @@ const verifyToken = require('../middleware/verifyToken');
 const bcrypt = require('bcrypt');
 const upload = require('../middleware/upload');
 
-// 🔐 PROTECTED dashboard route
+// 🔐 User dashboard route
 router.get("/dashboard", verifyToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password');
     if (!user) return res.status(404).json({ error: 'User not found' });
 
-    // Update lastLogin
     user.lastLogin = new Date();
     await user.save();
 
     res.json({
-  username: user.username,
-  lastLogin: user.lastLogin,
-  uploads: user.uploads || [],
-  followers: user.followers || 0,
-  profilePic: user.profilePic || null
-});
-
+      username: user.username,
+      lastLogin: user.lastLogin,
+      uploads: user.uploads || [],
+      followers: user.followers || 0,
+      profilePic: user.profilePic || null
+    });
   } catch (err) {
     console.error('Dashboard error:', err);
     res.status(500).json({ error: 'Dashboard failed' });
   }
 });
 
-// ✏️ UPDATE profile
+// ✏️ Update profile
 router.put('/update', verifyToken, async (req, res) => {
   const { username, email, currentPassword, newPassword } = req.body;
   const user = await User.findById(req.user.id);
@@ -49,7 +47,7 @@ router.put('/update', verifyToken, async (req, res) => {
   res.json({ message: 'Profile updated' });
 });
 
-// 🌍 PUBLIC profile view
+// 🌍 Public profile view by username
 router.get('/:username', async (req, res) => {
   try {
     const user = await User.findOne({ username: req.params.username });
@@ -67,7 +65,7 @@ router.get('/:username', async (req, res) => {
   }
 });
 
-// 📤 IMAGE upload route
+// 📤 Upload image
 router.post('/upload', verifyToken, upload.single('image'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: "No file uploaded" });
@@ -87,18 +85,18 @@ router.post('/upload', verifyToken, upload.single('image'), async (req, res) => 
   }
 });
 
-// All uploads route
+// 🌐 All public uploads
 router.get('/all-uploads', async (req, res) => {
   try {
     const users = await User.find({}, 'uploads username');
     const uploads = [];
 
     users.forEach(user => {
-      if (user.uploads && user.uploads.length > 0) {
+      if (Array.isArray(user.uploads)) {
         user.uploads.forEach(imgPath => {
           uploads.push({ 
             src: imgPath, 
-            username: user.username || "unknown" 
+            username: user.username || "unknown"
           });
         });
       }
@@ -111,6 +109,6 @@ router.get('/all-uploads', async (req, res) => {
   }
 });
 
-
 module.exports = router;
+
 

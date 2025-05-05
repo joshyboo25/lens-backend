@@ -28,7 +28,7 @@ app.use('/api/user', require('./routes/user'));
 app.use('/api/misc', require('./routes/misc'));
 
 // MongoDB Connection
-mongoose.connect(process.env.MONGO_URI, {
+mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   serverSelectionTimeoutMS: 10000, // 💡 Max time to wait for Mongo before throwing an error

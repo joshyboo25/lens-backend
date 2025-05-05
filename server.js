@@ -10,11 +10,12 @@ const app = express();
 app.use(cors({
   origin: [
     'https://lenslayereddesigns.netlify.app',
-    'https://main--lenslayereddesigns.netlify.app' // 👈 add this
+    'https://main--lenslayereddesigns.netlify.app' // optional preview URL
   ],
   credentials: true,
-  methods: ['GET', 'POST']
+  methods: ['GET', 'POST', 'PUT']
 }));
+
 
 
 
